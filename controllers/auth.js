@@ -16,7 +16,7 @@ const register = async (req, res) => {
             occupation,
         } = req.body;
 
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(password, salt);
 
         const newUser = new User({
@@ -34,15 +34,41 @@ const register = async (req, res) => {
 
         const savedUser = await newUser.save();
         console.log({ savedUser });
-        res.status(201).json(savedUser);
+        res.status(201).json({
+            Message: "Successfully created new User",
+            data: {
+                firstName: savedUser.firstName,
+                lastName: savedUser.lastName,
+                email: savedUser.email,
+                picturePath: savedUser.picturePath,
+                friends: savedUser.friends,
+                location: savedUser.location,
+                occupation: savedUser.occupation
+            }
+        });
     } catch (error) {
         console.log({ error });
         res.status(500).json({ error: error.message });
     }
 }
 
-const login = async (req, res) => {
 
-}
+/* LOGGING IN */
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email: email });
+        if (!user) return res.status(400).json({ msg: "User does not exist. " });
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ msg: "Invalid credentials. " });
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        delete user.password;
+        return res.status(200).json({ token, user });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 module.exports = { register, login };

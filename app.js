@@ -10,7 +10,9 @@ const path = require("path");
 const { fileURLToPath } = require("url");
 const authRoutes = require("./routes/auth.js");
 
-const { register } = require("./controllers/auth.js");
+const { register } = require("./controllers/authController.js");
+const userRoutes = require("./routes/users.js");
+// const postRoutes = require("./routes/posts.js");
 
 /* CONFIGURATIONS */
 // const __filename = fileURLToPath(import.meta.url);
@@ -45,7 +47,7 @@ app.post("/auth/register", upload.single("picture"), register);
 
 /* ROUTES */
 app.use("/auth", authRoutes);
-// app.use("/users", userRoutes);
+app.use("/users", userRoutes);
 // app.use("/posts", postRoutes);
 
 /* MONGOOSE SETUP */

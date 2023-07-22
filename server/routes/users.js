@@ -3,7 +3,7 @@ const {
   getUser,
   getUserFriends,
   addRemoveFriend,
-} = require("../controllers/usersController.js");
+} = require("../controllers/users.js");
 const { verifyToken } = require("../middleware/auth.js");
 
 const router = express.Router();
